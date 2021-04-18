@@ -1,5 +1,8 @@
 import logo from './logo.svg';
-import './App.css';
+import './App.less';
+import React, {Component} from 'react';
+import ReactDOM from 'react-dom';
+import 'antd/dist/antd.less';
 
 function App() {
   return (
@@ -22,4 +25,4 @@ function App() {
   );
 }
 
-export default App;
+// export default App;

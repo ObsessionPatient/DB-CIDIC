@@ -43,5 +43,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "devDependencies": {
+    "eslint": "^7.24.0",
+    "eslint-loader": "^4.0.2"
+  },
+  "proxy":"http://58.33.91.86:18090"
 }

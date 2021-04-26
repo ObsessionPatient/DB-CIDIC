@@ -9,18 +9,16 @@ const { SubMenu } = Menu;
 const menu = (
   <div className='explore'>
     <Menu theme='dark'>
-      <SubMenu title="关于我们的数据">
-      </SubMenu>
       <SubMenu title="主题">
-        <Menu.Item><a href='#/data/land'>土地利用</a></Menu.Item>
-        <Menu.Item><a href='#/data/trans'>交通体系</a></Menu.Item>
-        <Menu.Item><a href='#/data/resource'>资源利用</a></Menu.Item>
-        <Menu.Item><a href='#/data/envir'>生态环境</a></Menu.Item>
-        <Menu.Item><a href='#/data/economy'>经济持续</a></Menu.Item>
+        <Menu.Item><a href='#/theme'>基础空间</a></Menu.Item>
+        <Menu.Item><a href='#/theme'>卫星遥感</a></Menu.Item>
+        <Menu.Item><a href='#/theme'>生态气候</a></Menu.Item>
+        <Menu.Item><a href='#/theme'>卫星影像</a></Menu.Item>
+        <Menu.Item><a href='#/theme'>统计指标</a></Menu.Item>
+        <Menu.Item><a href='#/theme'>公共服务</a></Menu.Item>
+        <Menu.Item><a href='#/theme'>交通监测</a></Menu.Item>
       </SubMenu>
       <SubMenu title="地域">
-      </SubMenu>
-      <SubMenu title="类型">
       </SubMenu>
     </Menu>
   </div>

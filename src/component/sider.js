@@ -18,10 +18,6 @@ export default class MySider extends Component {
                         mode="inline"
                         style={{ height: '100%', borderRight: 0 }}
                     >
-                        <SubMenu key="sub1" title="关于我们的数据">
-                            <Menu.Item style={{ margin: '0px' }} key="6">option1</Menu.Item>
-                            <Menu.Item style={{ margin: '0px' }} key="7">option2</Menu.Item>
-                        </SubMenu>
                         <SubMenu key="sub2" title="主题">
                             <Menu.Item style={{ margin: '0px' }} key="1"><a href='#/data/land'>土地利用</a></Menu.Item>
                             <Menu.Item style={{ margin: '0px' }} key="2"><a href='#/data/trans'>交通体系</a></Menu.Item>

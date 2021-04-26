@@ -4,22 +4,9 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import axios from 'axios'
 import { setToken } from "../../utils/auth"
 
-const tailFormItemLayout = {
-    wrapperCol: {
-        xs: {
-            span: 24,
-            offset: 0,
-        },
-        sm: {
-            span: 16,
-            offset: 8,
-        },
-    },
-}
-
 const NormalLoginForm = () => {
     const onFinish = values => {
-        console.log('Received values of form: ', values);
+        console.log(values);
         axios.post('/login', {
             userName: values.userName,
             password: values.password,
@@ -46,6 +33,12 @@ const NormalLoginForm = () => {
         >
             <Form.Item
                 name="userName"
+                rules={[
+                    {
+                        required: true,
+                        message: '请输入您的用户名！',
+                    },
+                ]}
             >
                 <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="请输入用户名" />
             </Form.Item>
@@ -64,12 +57,10 @@ const NormalLoginForm = () => {
                     placeholder="请输入密码"
                 />
             </Form.Item>
-
-            <Form.Item {...tailFormItemLayout}>
+            <Form.Item style={{textAlign: 'center'}}>
                 <Button type="primary" htmlType="submit" className="login-form-button">
                     登录
-        </Button>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;没有账号？<a href="#/signUp">现在注册！</a>
+                </Button>
             </Form.Item>
         </Form>
     );

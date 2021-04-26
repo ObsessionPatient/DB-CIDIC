@@ -4,8 +4,9 @@ import FirstMenu from '../component/firstMenu'
 import MySider from '../component/sider'
 import { Layout, Menu, Button, Table } from 'antd';
 import * as echarts from 'echarts';
-import './theme.less'
+import Ecoclimate from './ecoclimate/ecoclimate'
 import axios from 'axios'
+import DataTable from './dataTable'
 
 const { Content } = Layout;
 const { Sider } = Layout;
@@ -16,27 +17,16 @@ export default class Theme extends Component {
         super(props)
         this.state = {
             data: [],
-            gResource: {
-                proportion: 0.0,
-                use: 0.0,
-                renewable: 0.0,
-                gdp: 0.0
-            },
-            rResource: {
-                proportion: 0.0,
-                use: 0.0,
-                renewable: 0.0,
-                gdp: 0.0
-            },
             menuData: [],
-            series: [],
-            count: 0
+            dataOne: [],
+            dataTwo: [],
+            count: 0,
+            indicator: '',
+            name: ''
         }
-        //this.getList()
-        //this.showResource(1)
-        // this.getMenu()
     }
 
+    //获取当前目录树
     getMenu() {
         var token = JSON.parse(localStorage.getItem('token')).token
         axios.get('/api/v1/data_tree', {
@@ -56,6 +46,7 @@ export default class Theme extends Component {
             })
     }
 
+    //动态渲染目录（暂时无效，没使用）
     recursion() {
         //var dataSource = Array.from(this.state.menuData)
         return (
@@ -73,44 +64,10 @@ export default class Theme extends Component {
         )
     }
 
-    columns = [
-        {
-            title: '序号',
-            dataIndex: 'order',
-            key: 'order',
-            width: '30%',
-            align: 'center',
-            render: text => <a>{text}</a>,
-        },
-        {
-            title: '新区名称',
-            dataIndex: 'name',
-            key: 'name',
-            render: (_, record) => (
-                <Button type="text" onClick={() => this.showResource(record.key)} style={{ padding: '0' }}>
-                    {record.name}
-                </Button>
-            )
-        }
-    ]
-
-    getList() {
-        axios.get('/api/v1/districts')
-            .then((res) => {
-                console.log("成功")
-                this.setState({
-                    data: res.data
-                })
-            })
-            .catch((res) => {
-                console.log(res)
-            })
-    }
-
-    showSunshine() {
-        var tArray = new Array();  //先声明一维
+    //只有单种数据
+    showOne(indicator) {
         var token = JSON.parse(localStorage.getItem('token')).token
-        axios.get('/api/v1/indicator/sunshine', {
+        axios.get(`/api/v1/indicator/${indicator}`, {
             headers: {
                 'token': token
             },
@@ -121,26 +78,31 @@ export default class Theme extends Component {
             .then((res) => {
                 this.setState({
                     data: res.data,
-                    series: res.data.series[0].datas,
+                    dataOne: res.data.series[0].datas,
                     count: res.data.count
                 })
-                console.log(this.state.series)
+                console.log(this.state.dataOne)
                 console.log(this.state.count)
 
+                //把拿到的series数据处理成echarts接受的二维数组形式
+                var tArray = new Array();  //先声明一维
                 for (var k = 0; k < this.state.count; k++) {    //一维长度
 
                     tArray[k] = new Array();  //声明二维，每一个一维数组里面的一个元素都是一个数组；
 
                     for (var j = 0; j < 2; j++) {   //一维数组里面每个元素数组可以包含的数量p，p也是一个变量；
                         if (j === 0)
-                            tArray[k][j] = this.state.series[k].date
+                            tArray[k][j] = this.state.dataOne[k].date
                         else if (j === 1)
-                            tArray[k][j] = this.state.series[k].value
+                            tArray[k][j] = this.state.dataOne[k].value
                     }
                 }
                 console.log(tArray)
 
-                var chartDom = document.getElementById('sunshine');
+                var chartDom = document.getElementById('ecoclimate');
+                if (chartDom != null) {
+                    echarts.dispose(chartDom)
+                }
                 var myChart = echarts.init(chartDom);
                 var option;
 
@@ -171,14 +133,14 @@ export default class Theme extends Component {
                     dataZoom: [{
                         type: 'inside',
                         start: 0,
-                        end: 20
+                        end: 10
                     }, {
                         start: 0,
-                        end: 20
+                        end: 10
                     }],
                     series: [
                         {
-                            name: '日照时数',
+                            name: this.state.name,
                             type: 'line',
                             smooth: true,
                             symbol: 'none',
@@ -193,6 +155,130 @@ export default class Theme extends Component {
             .catch((res) => {
                 console.log(res)
             })
+    }
+
+    //有两种数据
+    showTwo(indicator) {
+        var token = JSON.parse(localStorage.getItem('token')).token
+        axios.get(`/api/v1/indicator/${indicator}`, {
+            headers: {
+                'token': token
+            },
+            params: {
+                'area': '漠河'
+            }
+        })
+            .then((res) => {
+                this.setState({
+                    data: res.data,
+                    dataOne: res.data.series[0].datas,
+                    dataTwo: res.data.series[1].datas,
+                    count: res.data.count
+                })
+                console.log(this.state.dataOne)
+                console.log(this.state.count)
+
+                //把拿到的series数据处理成echarts接受的二维数组形式
+                var tArray = new Array();  //先声明一维
+                for (var k = 0; k < this.state.count; k++) {    //一维长度
+
+                    tArray[k] = new Array();  //声明二维，每一个一维数组里面的一个元素都是一个数组；
+
+                    for (var j = 0; j < 2; j++) {   //一维数组里面每个元素数组可以包含的数量p，p也是一个变量；
+                        if (j === 0)
+                            tArray[k][j] = this.state.dataOne[k].date
+                        else if (j === 1)
+                            tArray[k][j] = this.state.dataOne[k].value
+                    }
+                }
+                var sArray = new Array();  //先声明一维
+                for (var k = 0; k < this.state.count; k++) {    //一维长度
+
+                    sArray[k] = new Array();  //声明二维，每一个一维数组里面的一个元素都是一个数组；
+
+                    for (var j = 0; j < 2; j++) {   //一维数组里面每个元素数组可以包含的数量p，p也是一个变量；
+                        if (j === 0)
+                            sArray[k][j] = this.state.dataTwo[k].date
+                        else if (j === 1)
+                            sArray[k][j] = this.state.dataTwo[k].value
+                    }
+                }
+                // console.log(tArray)
+
+                var chartDom = document.getElementById('ecoclimate');
+                if (chartDom != null) {
+                    echarts.dispose(chartDom)
+                }
+                var myChart = echarts.init(chartDom);
+                var option;
+                console.log('test')
+
+                option = {
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    toolbox: {
+                        feature: {
+                            dataZoom: {
+                                yAxisIndex: 'none'
+                            },
+                            restore: {},
+                            saveAsImage: {}
+                        }
+                    },
+                    xAxis: {
+                        type: 'time',
+                        nameLocation: 'middle',
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    dataZoom: [{
+                        type: 'inside',
+                        start: 0,
+                        end: 7
+                    }, {
+                        start: 0,
+                        end: 7
+                    }],
+                    series: [
+                        {
+                            // name: this.state.name,
+                            type: 'line',
+                            showSymbol: false,
+                            encode: {
+                                x: 'date',
+                                y: 'value',
+                                itemName: 'Year',
+                                tooltip: ['value'],
+                            },
+                            data: tArray
+                        },
+                        {
+                            type: 'line',
+                            showSymbol: false,
+                            encode: {
+                                x: 'date',
+                                y: 'value',
+                                itemName: 'Year',
+                                tooltip: ['value'],
+                            },
+                            data: sArray
+                        }]
+                };
+
+                option && myChart.setOption(option);
+            })
+            .catch((res) => {
+                console.log(res)
+            })
+    }
+
+    //试图把图表当做一个单独的组件进行运用，渲染更新问题还未解决，故暂时没用
+    showEcoclimate() {
+        return (
+            <Ecoclimate indicator={this.state.indicator} />
+        )
     }
 
     render() {
@@ -217,9 +303,42 @@ export default class Theme extends Component {
                                 <Menu.Item style={{ margin: '0px' }} key="2"><a href='##'>卫星遥感</a></Menu.Item>
                                 <SubMenu key="3" title="生态气候">
                                     <Menu.Item style={{ margin: '0px' }} key="7"><a href='##'>数据总览</a></Menu.Item>
+                                    <Menu.Item key="10">
+                                        <a onClick={() => {
+                                            this.showOne('temperature')
+                                            this.setState({
+                                                name: '地表气温'
+                                            })
+                                        }}>
+                                            地表气温
+                                        </a>
+                                    </Menu.Item>
+                                    <Menu.Item key="11">
+                                        <a onClick={() => {
+                                            this.showTwo('evaporation')
+                                            this.setState({
+                                                name: '蒸发'
+                                            })
+                                        }}>
+                                            蒸发
+                                        </a>
+                                    </Menu.Item>
+                                    <Menu.Item key="12">
+                                        <a onClick={() => {
+                                            this.showTwo('humidity')
+                                            this.setState({
+                                                name: '相对湿度'
+                                            })
+                                        }}>
+                                            相对湿度
+                                        </a>
+                                    </Menu.Item>
                                     <Menu.Item key="6">
                                         <a onClick={() => {
-                                            this.showSunshine()
+                                            this.showOne('sunshine')
+                                            this.setState({
+                                                name: '日照时数'
+                                            })
                                         }}>
                                             日照时数
                                         </a>
@@ -233,8 +352,10 @@ export default class Theme extends Component {
                         </Menu>
                     </Sider>
                     <Layout>
-                        <div id='sunshine' style={{ width: 1070, height: 630, margin: 'auto', marginTop: '20px' }}>
+                        <div id='ecoclimate' style={{ width: 1070, height: 630, margin: 'auto', marginTop: '20px' }}>
                         </div>
+                        {/* <DataTable /> */}
+                        {/* {this.showEcoclimate()} */}
                     </Layout>
                 </Layout>
             </div>

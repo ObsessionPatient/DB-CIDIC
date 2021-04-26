@@ -29,18 +29,8 @@ function FirstMenu() {
     
     <div>
       <Row className="firstbar" align="middle" justify="end">
-        <Col span={14} style={{color: "#ffffff", fontSize: "20px"}}>
+        <Col span={20} style={{color: "#ffffff", fontSize: "20px"}}>
             &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;CIDIC
-        </Col>
-        <Col span={2}>
-            <Dropdown trigger='click'>
-              <div className="title">
-                <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                  &emsp;&emsp;新闻
-                </a>
-              </div>
-              
-            </Dropdown>
         </Col>
         <Col span={2}>
             <Dropdown overlay={menu}>
@@ -56,24 +46,6 @@ function FirstMenu() {
               <div className="title">
                 <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
                   数据洞察
-                </a>
-              </ div>
-            </Dropdown>
-        </Col>
-        <Col span={2}>
-            <Dropdown trigger='click'>
-              <div className="title">
-                <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                  数据地图
-                </a>
-              </ div>
-            </Dropdown>
-        </Col>
-        <Col span={2}>
-            <Dropdown trigger='click'>
-              <div className="title">
-                <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                  数据众包
                 </a>
               </ div>
             </Dropdown>

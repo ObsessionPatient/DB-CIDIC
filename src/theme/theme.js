@@ -20,6 +20,7 @@ export default class Theme extends Component {
             menuData: [],
             dataOne: [],
             dataTwo: [],
+            dataThree: [],
             count: 0,
             indicator: '',
             name: ''
@@ -29,7 +30,7 @@ export default class Theme extends Component {
     //获取当前目录树
     getMenu() {
         var token = JSON.parse(localStorage.getItem('token')).token
-        axios.get('/api/v1/data_tree', {
+        axios.get('http://58.33.91.86:18090/api/v1/data_tree', {
             headers: {
                 'token': token
             },
@@ -67,7 +68,7 @@ export default class Theme extends Component {
     //只有单种数据
     showOne(indicator) {
         var token = JSON.parse(localStorage.getItem('token')).token
-        axios.get(`/api/v1/indicator/${indicator}`, {
+        axios.get(`http://58.33.91.86:18090/api/v1/indicator/${indicator}`, {
             headers: {
                 'token': token
             },
@@ -140,13 +141,16 @@ export default class Theme extends Component {
                     }],
                     series: [
                         {
-                            name: this.state.name,
                             type: 'line',
-                            smooth: true,
-                            symbol: 'none',
-                            areaStyle: {},
+                            showSymbol: false,
+                            encode: {
+                                x: 'date',
+                                y: 'value',
+                                itemName: 'Year',
+                                tooltip: ['value'],
+                            },
                             data: tArray
-                        }
+                        },
                     ]
                 };
 
@@ -160,7 +164,7 @@ export default class Theme extends Component {
     //有两种数据
     showTwo(indicator) {
         var token = JSON.parse(localStorage.getItem('token')).token
-        axios.get(`/api/v1/indicator/${indicator}`, {
+        axios.get(`http://58.33.91.86:18090/api/v1/indicator/${indicator}`, {
             headers: {
                 'token': token
             },
@@ -274,6 +278,147 @@ export default class Theme extends Component {
             })
     }
 
+    //有三种数据
+    showThree(indicator) {
+        var token = JSON.parse(localStorage.getItem('token')).token
+        axios.get(`http://58.33.91.86:18090/api/v1/indicator/${indicator}`, {
+            headers: {
+                'token': token
+            },
+            params: {
+                'area': '漠河'
+            }
+        })
+            .then((res) => {
+                this.setState({
+                    data: res.data,
+                    dataOne: res.data.series[0].datas,
+                    dataTwo: res.data.series[1].datas,
+                    dataThree: res.data.series[2].datas,
+                    count: res.data.count
+                })
+                console.log(this.state.dataOne)
+                console.log(this.state.count)
+
+                //把拿到的series数据处理成echarts接受的二维数组形式
+                var tArray = new Array();  //先声明一维
+                for (var k = 0; k < this.state.count; k++) {    //一维长度
+
+                    tArray[k] = new Array();  //声明二维，每一个一维数组里面的一个元素都是一个数组；
+
+                    for (var j = 0; j < 2; j++) {   //一维数组里面每个元素数组可以包含的数量p，p也是一个变量；
+                        if (j === 0)
+                            tArray[k][j] = this.state.dataOne[k].date
+                        else if (j === 1)
+                            tArray[k][j] = this.state.dataOne[k].value
+                    }
+                }
+                var sArray = new Array();  //先声明一维
+                for (var k = 0; k < this.state.count; k++) {    //一维长度
+
+                    sArray[k] = new Array();  //声明二维，每一个一维数组里面的一个元素都是一个数组；
+
+                    for (var j = 0; j < 2; j++) {   //一维数组里面每个元素数组可以包含的数量p，p也是一个变量；
+                        if (j === 0)
+                            sArray[k][j] = this.state.dataTwo[k].date
+                        else if (j === 1)
+                            sArray[k][j] = this.state.dataTwo[k].value
+                    }
+                }
+                var rArray = new Array();  //先声明一维
+                for (var k = 0; k < this.state.count; k++) {    //一维长度
+
+                    rArray[k] = new Array();  //声明二维，每一个一维数组里面的一个元素都是一个数组；
+
+                    for (var j = 0; j < 2; j++) {   //一维数组里面每个元素数组可以包含的数量p，p也是一个变量；
+                        if (j === 0)
+                            rArray[k][j] = this.state.dataThree[k].date
+                        else if (j === 1)
+                            rArray[k][j] = this.state.dataThree[k].value
+                    }
+                }
+                // console.log(tArray)
+
+                var chartDom = document.getElementById('ecoclimate');
+                if (chartDom != null) {
+                    echarts.dispose(chartDom)
+                }
+                var myChart = echarts.init(chartDom);
+                var option;
+                console.log('test')
+
+                option = {
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    toolbox: {
+                        feature: {
+                            dataZoom: {
+                                yAxisIndex: 'none'
+                            },
+                            restore: {},
+                            saveAsImage: {}
+                        }
+                    },
+                    xAxis: {
+                        type: 'time',
+                        nameLocation: 'middle',
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    dataZoom: [{
+                        type: 'inside',
+                        start: 0,
+                        end: 7
+                    }, {
+                        start: 0,
+                        end: 7
+                    }],
+                    series: [
+                        {
+                            // name: this.state.name,
+                            type: 'line',
+                            showSymbol: false,
+                            encode: {
+                                x: 'date',
+                                y: 'value',
+                                itemName: 'Year',
+                                tooltip: ['value'],
+                            },
+                            data: tArray
+                        },
+                        {
+                            type: 'line',
+                            showSymbol: false,
+                            encode: {
+                                x: 'date',
+                                y: 'value',
+                                itemName: 'Year',
+                                tooltip: ['value'],
+                            },
+                            data: sArray
+                        },
+                        {
+                            type: 'line',
+                            showSymbol: false,
+                            encode: {
+                                x: 'date',
+                                y: 'value',
+                                itemName: 'Year',
+                                tooltip: ['value'],
+                            },
+                            data: rArray
+                        }]
+                };
+
+                option && myChart.setOption(option);
+            })
+            .catch((res) => {
+                console.log(res)
+            })
+    }
+
     //试图把图表当做一个单独的组件进行运用，渲染更新问题还未解决，故暂时没用
     showEcoclimate() {
         return (
@@ -305,12 +450,12 @@ export default class Theme extends Component {
                                     <Menu.Item style={{ margin: '0px' }} key="7"><a href='##'>数据总览</a></Menu.Item>
                                     <Menu.Item key="10">
                                         <a onClick={() => {
-                                            this.showOne('temperature')
+                                            this.showThree('temperature')
                                             this.setState({
-                                                name: '地表气温'
+                                                name: '气温'
                                             })
                                         }}>
-                                            地表气温
+                                            气温
                                         </a>
                                     </Menu.Item>
                                     <Menu.Item key="11">
@@ -331,6 +476,26 @@ export default class Theme extends Component {
                                             })
                                         }}>
                                             相对湿度
+                                        </a>
+                                    </Menu.Item>
+                                    <Menu.Item key="13">
+                                        <a onClick={() => {
+                                            this.showThree('pressure')
+                                            this.setState({
+                                                name: '本站气压'
+                                            })
+                                        }}>
+                                            本站气压
+                                        </a>
+                                    </Menu.Item>
+                                    <Menu.Item key="14">
+                                        <a onClick={() => {
+                                            this.showThree('precipitation')
+                                            this.setState({
+                                                name: '降水量'
+                                            })
+                                        }}>
+                                            降水量
                                         </a>
                                     </Menu.Item>
                                     <Menu.Item key="6">

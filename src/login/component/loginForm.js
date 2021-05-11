@@ -7,7 +7,7 @@ import { setToken } from "../../utils/auth"
 const NormalLoginForm = () => {
     const onFinish = values => {
         console.log(values);
-        axios.post('/login', {
+        axios.post('http://58.33.91.86:18090/login', {
             userName: values.userName,
             password: values.password,
         })

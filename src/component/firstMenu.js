@@ -42,13 +42,13 @@ function FirstMenu() {
             </Dropdown>
         </Col>
         <Col span={2}>
-            <Dropdown trigger='click'>
+            {/* <Dropdown trigger='click'> */}
               <div className="title">
-                <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                <a href='#/monitor'>
                   数据洞察
                 </a>
               </ div>
-            </Dropdown>
+            {/* </Dropdown> */}
         </Col>
       </Row>
     </div>
